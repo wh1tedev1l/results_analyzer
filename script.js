@@ -74,18 +74,35 @@ function manipulateWorksheet(worksheet) {
     // Step 2: Create a new array with unique roll numbers and subject headers
     const transformedData = [];
     transformedData.push([...new Set(data.map((row) => row[1]))]);
-
     transformedData.push([...new Set(data.map((row) => row[2]))]);
-    transformedData.push(["S.No","Hall Ticket No",...transformedData[1].slice(1).map((subject) => ["I","E","T","C"]).flat()]);
+    transformedData.push(["S.No","Hall Ticket No",...transformedData[1].slice(1).map((subject) => ["I","E","T","G","GP","C"]).flat()]);
+
+    transformedData[0] = transformedData[0].map((item, index) => {
+        if (index === 0) {
+          return [item, ""];
+        } else {
+          return [item, "", "", "","",""];
+        }
+      }).flat(); 
+
+      transformedData[1] = transformedData[1].map((item, index) => {
+        if (index === 0) {
+          return [item, ""];
+        } else {
+          return [item, "", "", "","",""];
+        }
+      }).flat(); 
 
     // Step 3: Fill in the internal and external marks for each unique roll number
     for (let i = 0; i < uniqueRollNumbers.length; i++) {
       const rollNumber = uniqueRollNumbers[i];
-      const marks = data.filter((row) => row[0] === rollNumber).map((row) => [row[3], row[4],row[5],row[8]]);
+      const marks = data.filter((row) => row[0] === rollNumber).map((row) => [row[3], row[4],row[5],row[6],row[7],row[8]]);
 
       transformedData.push([String(i+1),rollNumber, ...marks.flat()]);
     }
   
+    console.table(transformedData)
+
     // Convert the manipulated data back to worksheet format
     // const headers = XLSX.utils.decode_range(worksheet['!ref']).e.c + 1;
     const newWorksheet = XLSX.utils.json_to_sheet(transformedData); // const newWorksheet = XLSX.utils.json_to_sheet(data, { header: [], skipHeader: true });
